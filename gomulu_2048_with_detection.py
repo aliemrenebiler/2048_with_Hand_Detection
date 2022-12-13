@@ -2,17 +2,15 @@ import pygame
 import random
 import os
 
-
 import cv2 as cv
 import numpy as np
 import matplotlib.pyplot as plt
-
 from statistics import mode
 from argparse import ArgumentParser
 
 pygame.init()
 
-# Define some colors
+# Game Preparations
 COLORS = {
     0: (204, 192, 179),
     2: (238, 228, 218),
@@ -50,13 +48,7 @@ timer = pygame.time.Clock()
 fps = 60
 font = pygame.font.Font("Roboto-Bold.ttf", FONT_SIZE)
 
-# -*- coding: utf-8 -*-
-"""
-Created on Thu Dec  8 12:44:45 2022
-
-@author: Bengi
-"""
-
+# Detection Preparations
 ap = ArgumentParser()
 ap.add_argument("-rec", "--record", default=False, action="store_true", help="Record?")
 ap.add_argument(
@@ -700,7 +692,6 @@ def start_the_game():
 
 
 start_the_game()
-
 pygame.quit()
 cap.release()
 if args["record"]:
