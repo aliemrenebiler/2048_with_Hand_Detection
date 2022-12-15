@@ -111,6 +111,8 @@ if args["plot"]:
     plt.ion()
 
 frame_previous = cap.read()[1]
+frame_previous = cv.resize(frame_previous, (200, 150))
+
 gray_previous = cv.cvtColor(frame_previous, cv.COLOR_BGR2GRAY)
 hsv = np.zeros_like(frame_previous)
 hsv[:, :, 1] = 255
@@ -128,6 +130,7 @@ param = {
 def detect_movement():
     global gray_previous, directions_map
     grabbed, frame = cap.read()
+    frame = cv.resize(frame, (200, 150))
     if grabbed:
         gray = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
         flow = cv.calcOpticalFlowFarneback(gray_previous, gray, None, **param)
@@ -162,17 +165,6 @@ def detect_movement():
             directions_map[-1, :-1] = 0
             directions_map = np.roll(directions_map, 1, axis=0)
 
-        if args["plot"]:
-            plt.clf()
-            plt.plot(directions_map[:, 0], label="Down")
-            plt.plot(directions_map[:, 1], label="Right")
-            plt.plot(directions_map[:, 2], label="Up")
-            plt.plot(directions_map[:, 3], label="Left")
-            plt.plot(directions_map[:, 4], label="Waiting")
-            plt.legend(loc=2)
-            plt.pause(1e-5)
-            plt.show()
-
         loc = directions_map.mean(axis=0).argmax()
         if loc == 0:
             text = "DOWN"
@@ -187,7 +179,6 @@ def detect_movement():
 
         hsv[:, :, 0] = ang_180
         hsv[:, :, 2] = cv.normalize(mag, None, 0, 255, cv.NORM_MINMAX)
-        rgb = cv.cvtColor(hsv, cv.COLOR_HSV2BGR)
 
         frame = cv.flip(frame, 1)
         cv.putText(
@@ -200,17 +191,7 @@ def detect_movement():
             2,
         )
 
-        # k = cv.waitKey(1) & 0xff
-        # if k == ord('q'):
-        #     break
-        if args["record"]:
-            out.write(frame)
-        if args["rgb"]:
-            cv.imshow("Mask", rgb)
-        cv.imshow("Frame", frame)
-        # k = cv.waitKey(1) & 0xff
-        # if k == ord('q'):
-        #     break
+        cv.imshow("Camera View", frame)
         return text
 
 
@@ -694,8 +675,4 @@ def start_the_game():
 start_the_game()
 pygame.quit()
 cap.release()
-if args["record"]:
-    out.release()
-if args["plot"]:
-    plt.ioff()
 cv.destroyAllWindows()
